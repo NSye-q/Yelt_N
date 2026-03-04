@@ -1,0 +1,64 @@
+#include <stdio.h>
+
+void swap(float* a,float* b)
+{
+    float temp=*a;
+    *a=*b;
+    *b=temp;
+}
+
+void triangulation(int n,float matrix[n][n],float* det)
+{
+    for (int i=0;i<n;i++)
+    {
+        int j=i;
+        // ищем строку с ненулевым элементом в i-м столбце
+        while (j<n && matrix[j][i]==0)
+            j++;
+        if (j==n)
+        {
+            // случай, когда столбец полностью нулевой
+            *det=0;
+            return;
+        }
+        if (j!=i)
+        {
+            // меняем строки местами
+            for (int k=0;k<n;k++)
+                swap(&matrix[j][k],&matrix[i][k]);
+            *det=-(*det);
+        }
+        // обнуление эл-тов ниже
+        for (int row=i+1;row<n;row++)
+        {
+            if (matrix[i][i]==0)
+            {
+                *det=0;
+                return;
+            }
+            float factor=matrix[row][i]/matrix[i][i];
+            for (int col=i;col<n;col++) {
+                matrix[row][col]-=(factor*matrix[i][col]);
+            }
+        }
+    }
+    for (int i=0;i<n;i++)
+        *det*=matrix[i][i];
+}
+
+int main()
+{
+    int n;
+    printf("Введите кол-во строк/столбцов:\n");
+    scanf("%d",&n);
+    float matrix[n][n];
+    printf("Введите элементы матрицы:\n");
+    for (int i=0; i<n;i++)
+        for (int j=0;j<n;j++)
+            scanf("%f",&matrix[i][j]);
+
+    float det=1;
+    triangulation(n,matrix,&det);
+    printf("Определитель: %.2f",det);
+    return 0;
+}
